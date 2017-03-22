@@ -1,3 +1,5 @@
+package Zawoo;
+
 public class SmallestPositive
 {
 	public static int SmallestPositive1To20()

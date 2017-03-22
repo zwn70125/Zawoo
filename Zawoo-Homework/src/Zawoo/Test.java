@@ -1,3 +1,5 @@
+package Zawoo;
+
 import java.util.Scanner;
 import java.util.Arrays;
 import java.util.Random;
@@ -174,7 +176,6 @@ public class Test {
 		int counter = 0;
 	    int num = 0;
 	    int countOfNeg = 0;
-	    int countOfAll = 0;
 	    float avg = 0f;
 	    int sumPos = 0;
 	    int sumNeg = 0;
