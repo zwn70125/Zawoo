@@ -144,4 +144,66 @@ public class PROGRAM2
 	    // check for valid numeric entry
     	return input.nextLine();
 	}
+	
+	public static Boolean getEmployeeType()
+	{
+		// local temp var to validate user input
+		Boolean isValid = false;
+		String userInput = "";
+		
+		// collect and validate employee id
+		do
+	    {
+			// display menu of methods
+			System.out.println("\tHourly or Salary (H/S):");
+			
+		    // check for valid numeric entry
+	    	userInput = input.nextLine();
+	    	
+	    	// ensure ID is in correct format
+	        if (userInput.substring(0, 1).toLowerCase() != "h" && userInput.substring(0, 1).toLowerCase() != "s")
+	        {
+	        	// notify user of duplicate id
+	    		System.out.println("INVALID. Enter 'H' or 'S'. Please try again.");
+	    		
+	    		// restart loop
+	    		continue;
+		    }
+	        
+	        // valid id
+	        isValid = true;		        
+	    } while (!isValid);
+		
+		return (userInput.toLowerCase() == "h");
+	}
+	
+	public static float getHoursWorked()
+	{
+		// local temp var to validate user input
+		Boolean isValid = false;
+		String userInput = "";
+		
+		// collect and validate employee id
+		do
+	    {
+			// display menu of methods
+			System.out.println("\tHours worked this period:");
+			
+		    // check for valid numeric entry
+	    	userInput = input.nextLine();
+	    	
+	    	// ensure ID is in correct format
+	        if (userInput.substring(0, 1).toLowerCase() != "h" && userInput.substring(0, 1).toLowerCase() != "s")
+	        {
+	        	// notify user of duplicate id
+	    		System.out.println("This ID is invalid. Must start with 'H' or 'S'. Please try again.");
+	    		
+	    		// restart loop
+	    		continue;
+		    }
+	        
+	        // valid id
+	        isValid = true;		        
+	    } while (!isValid);
+	}
 }
