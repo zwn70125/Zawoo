@@ -1,8 +1,8 @@
 package Zawoo;
 
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.function.Function;
 
 public class PROGRAM2
 {
@@ -42,14 +42,14 @@ public class PROGRAM2
 		ProcessEmployee(employeeNames, employeeIds, hourlyEmployee, localResidents, hourlyWorked, hourlyRate, salaryRate, grossIncome, netIncome);
 		
 		// display payroll information
-		PayRollReport();
+		//PayRollReport();
 	}
 
 	public static void PrintLogo()
 	{
-		System.out.println("+=======================+");
-		System.out.println("+       OLDISH PUB      +");
-		System.out.println("+=======================+");
+		System.out.println("+============================+");
+		System.out.println("+         OLDISH PUB         +");
+		System.out.println("+============================+");
 	}
 	
 	public static void NumOfEmployees()
@@ -91,14 +91,20 @@ public class PROGRAM2
 			// collect and validate employee type
 			hourlyEmployee[i] = getEmployeeType();
 			
-			// collect and validate hourly hours worked
-			hourlyWorked[i] = getHoursWorked();
-			
-			// collect and validate hourly rates
-			hourlyRate[i] = getHourlyRate();
-			
-			// collect and validate salary data
-			salaryRate[i] = getSalary();
+			// collect hours worked or salary
+			if (hourlyEmployee[i])
+			{
+				// collect and validate hourly hours worked
+				hourlyWorked[i] = getHoursWorked();
+				
+				// collect and validate hourly rates
+				hourlyRate[i] = getHourlyRate();
+			}
+			else
+			{
+				// collect and validate salary data
+				salaryRate[i] = getSalary();
+			}
 			
 			// collect and validate employee resident type
 			localResidents[i] = getEmployeeLocality();
@@ -109,6 +115,10 @@ public class PROGRAM2
 			// collect and validate net income
 			netIncome[i] = getNetIncome(localResidents[i], grossIncome[i]);
 		}
+		
+		// print employee pay stub data
+		for (int i = 0; i < numOfEmployees; i++)
+			printPayStub(employeeNames[i], employeeIds[i], hourlyEmployee[i], localResidents[i], hourlyWorked[i], hourlyRate[i], salaryRate[i], grossIncome[i], netIncome[i]);
 	}
 	
 	public static String getEmployeeId(int currentEmployee, String[] employeeIds)
@@ -121,7 +131,7 @@ public class PROGRAM2
 		do
 	    {
 			// display menu of methods
-			System.out.println("Enter data for employee (" + currentEmployee + ")");
+			System.out.println("Enter data for employee (" + (currentEmployee + 1) + ")");
 			System.out.println("\tEmployee ID:");
 			
 		    // check for valid numeric entry
@@ -136,9 +146,9 @@ public class PROGRAM2
 	    		// restart loop
 	    		continue;
 	    	}
-	        
+
 	    	// ensure ID is in correct format
-	        if (userInput.substring(0, 1).toLowerCase() != "h" && userInput.substring(0, 1).toLowerCase() != "s")
+	        if (!userInput.toLowerCase().startsWith("h") && !userInput.toLowerCase().startsWith("s"))
 	        {
 	        	// notify user of duplicate id
 	    		System.out.println("This ID is invalid. Must start with 'H' or 'S'. Please try again.");
@@ -180,7 +190,7 @@ public class PROGRAM2
 	    	userInput = input.nextLine();
 	    	
 	    	// ensure ID is in correct format
-	        if (userInput.substring(0, 1).toLowerCase() != "h" && userInput.substring(0, 1).toLowerCase() != "s")
+	        if (!userInput.toLowerCase().startsWith("h") && !userInput.toLowerCase().startsWith("s"))
 	        {
 	        	// notify user of duplicate id
 	    		System.out.println("INVALID. Enter 'H' or 'S'. Please try again.");
@@ -193,7 +203,7 @@ public class PROGRAM2
 	        isValid = true;		        
 	    } while (!isValid);
 		
-		return (userInput.toLowerCase() == "h");
+		return (userInput.toLowerCase().startsWith("h"));
 	}
 	
 	public static Boolean getEmployeeLocality()
@@ -212,7 +222,7 @@ public class PROGRAM2
 	    	userInput = input.nextLine();
 	    	
 	    	// ensure ID is in correct format
-	        if (userInput.toLowerCase() != "y" && userInput.toLowerCase() != "n")
+	        if (!userInput.toLowerCase().startsWith("y") && !userInput.toLowerCase().startsWith("n"))
 	        {
 	        	// notify user of duplicate id
 	    		System.out.println("INVALID. Enter 'Y' or 'N'. Please try again.");
@@ -225,7 +235,7 @@ public class PROGRAM2
 	        isValid = true;		        
 	    } while (!isValid);
 		
-		return (userInput.toLowerCase() == "y");
+		return (userInput.toLowerCase().startsWith("y"));
 	}
 	
 	public static float getHoursWorked()
@@ -287,8 +297,8 @@ public class PROGRAM2
 	{
 		// calculate for hourly/salary
 		if (hourlyEmployee)
-			if (hoursWorked > 40)
-				return (hoursWorked - 40) * (hoursRate * 1.5f);
+			if (hoursWorked > 40.0f)
+				return ((40.0f * hoursRate) + ((hoursWorked - 40.0f) * (hoursRate * 1.5f)));
 			else
 				return hoursWorked * hoursRate;
 		else
@@ -299,7 +309,15 @@ public class PROGRAM2
 	public static float getNetIncome(Boolean localResident, float gross)
 	{
 		// calculate net income
-		return (gross - calcFedTax(gross) - calcStateTax(gross) - calcLocalTax(localResident, gross));
+		return (gross - calcSSITax(gross) - calcFedTax(gross) - calcStateTax(gross) - calcLocalTax(localResident, gross));
+	}
+	
+	// calculate Social Security tax
+	public static float calcSSITax(float gross)
+	{
+		final float taxRate3 = 0.03f;
+		
+		return gross * taxRate3;
 	}
 	
 	// calculate federal tax
@@ -334,5 +352,27 @@ public class PROGRAM2
 		
 		if (localResident) return gross * taxRateLocal;
 		else return gross * taxRateNonLocal;
+	}
+	
+	// print employee pay stub
+	public static void printPayStub(String employeeName, String employeeId, Boolean hourlyEmployee, Boolean localResident, float hourlyWorked, float hourlyRate, float salaryRate, float grossIncome, float netIncome)
+	{
+		// print header
+		System.out.println("+-------OLDISH PUB-------+");
+		
+		// print employee info
+		System.out.println("Name: " + employeeName.split(" ")[1] + ", " + employeeName.split(" ")[0]);
+		System.out.println("Gross: " + NumberFormat.getCurrencyInstance().format(grossIncome));
+		
+		// print tax detail
+		System.out.println("\tTaxes Detail------------------");
+		System.out.println("\t\t\t\tFed Tax:\t" + NumberFormat.getCurrencyInstance().format(calcFedTax(grossIncome)));
+		System.out.println("\t\t\t\tSSI Tax:\t" + NumberFormat.getCurrencyInstance().format(calcSSITax(grossIncome)));
+		System.out.println("\t\t\t\tState Tax:\t" + NumberFormat.getCurrencyInstance().format(calcStateTax(grossIncome)));
+		System.out.println("\t\t\t\tLocal Tax:\t" + NumberFormat.getCurrencyInstance().format(calcLocalTax(localResident, grossIncome)));
+		
+		// print totals
+		System.out.println("\t\t\t==================");
+		System.out.println("Net: " + NumberFormat.getCurrencyInstance().format(netIncome));
 	}
 }
