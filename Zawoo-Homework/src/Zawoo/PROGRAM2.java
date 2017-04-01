@@ -42,7 +42,7 @@ public class PROGRAM2
 		ProcessEmployee(employeeNames, employeeIds, hourlyEmployee, localResidents, hourlyWorked, hourlyRate, salaryRate, grossIncome, netIncome);
 		
 		// display payroll information
-		//PayRollReport();
+		payrollReport(hourlyEmployee, grossIncome, netIncome);
 	}
 
 	public static void PrintLogo()
@@ -358,21 +358,61 @@ public class PROGRAM2
 	public static void printPayStub(String employeeName, String employeeId, Boolean hourlyEmployee, Boolean localResident, float hourlyWorked, float hourlyRate, float salaryRate, float grossIncome, float netIncome)
 	{
 		// print header
-		System.out.println("+-------OLDISH PUB-------+");
-		
+		System.out.println("+-------OLDISH PUB Pay Stub-------+\n");
+				
 		// print employee info
 		System.out.println("Name: " + employeeName.split(" ")[1] + ", " + employeeName.split(" ")[0]);
 		System.out.println("Gross: " + NumberFormat.getCurrencyInstance().format(grossIncome));
 		
 		// print tax detail
 		System.out.println("\tTaxes Detail------------------");
-		System.out.println("\t\t\t\tFed Tax:\t" + NumberFormat.getCurrencyInstance().format(calcFedTax(grossIncome)));
-		System.out.println("\t\t\t\tSSI Tax:\t" + NumberFormat.getCurrencyInstance().format(calcSSITax(grossIncome)));
-		System.out.println("\t\t\t\tState Tax:\t" + NumberFormat.getCurrencyInstance().format(calcStateTax(grossIncome)));
-		System.out.println("\t\t\t\tLocal Tax:\t" + NumberFormat.getCurrencyInstance().format(calcLocalTax(localResident, grossIncome)));
+		System.out.println("\t\tFed Tax:\t" + NumberFormat.getCurrencyInstance().format(calcFedTax(grossIncome)));
+		System.out.println("\t\tSSI Tax:\t" + NumberFormat.getCurrencyInstance().format(calcSSITax(grossIncome)));
+		System.out.println("\t\tState Tax:\t" + NumberFormat.getCurrencyInstance().format(calcStateTax(grossIncome)));
+		System.out.println("\t\tLocal Tax:\t" + NumberFormat.getCurrencyInstance().format(calcLocalTax(localResident, grossIncome)));
 		
 		// print totals
-		System.out.println("\t\t\t==================");
+		System.out.println("\t\t======================");
+		System.out.println("\t\tTotal Tax: " + NumberFormat.getCurrencyInstance().format(grossIncome - netIncome));
+		System.out.println("======================================");
 		System.out.println("Net: " + NumberFormat.getCurrencyInstance().format(netIncome));
+		System.out.println("======================================");
+		
+		// print divider
+		System.out.println("\n+---------------------------------+\n");
+	}
+	
+	// print payroll report
+	public static void payrollReport(Boolean[] hourlyEmployee, float[] grossIncome, float[] netIncome)
+	{
+		// variables to hold totals
+		float totalEmployees = 0f;
+		float totalFederal = 0f;
+		float totalSSI = 0f;
+		float totalState = 0f;
+		float totalLocal = 0f;
+		
+		// calculate totals
+		for (int i = 0; i < grossIncome.length; i++)
+		{
+			totalEmployees += netIncome[i];
+			totalFederal += calcFedTax(grossIncome[i]);
+			totalSSI += calcSSITax(grossIncome[i]);
+			totalState += calcStateTax(grossIncome[i]);
+			totalLocal += calcLocalTax(hourlyEmployee[i], grossIncome[i]);
+		}
+		
+		// print header
+		System.out.println("+---------Payroll  Report---------+\n");
+				
+		// print tax detail
+		System.out.println("Total Pay to Employees:\t\t" + NumberFormat.getCurrencyInstance().format(totalEmployees));
+		System.out.println("Total Pay to Federal Tax:\t" + NumberFormat.getCurrencyInstance().format(totalFederal));
+		System.out.println("Total Pay to SSI Tax:\t\t" + NumberFormat.getCurrencyInstance().format(totalSSI));
+		System.out.println("Total Pay to State Tax:\t\t" + NumberFormat.getCurrencyInstance().format(totalState));
+		System.out.println("Total Pay Local Tax:\t\t" + NumberFormat.getCurrencyInstance().format(totalLocal));
+		
+		// print divider
+		System.out.println("\n+---------------------------------+\n");
 	}
 }
