@@ -11,6 +11,7 @@ public class PROGRAM2
 	
 	public static void main(String[] args)
 	{
+		// local variables
 		String[] employeeNames;
 		String[] employeeIds;
 		Boolean[] hourlyEmployee;
