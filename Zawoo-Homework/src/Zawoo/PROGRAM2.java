@@ -2,6 +2,7 @@ package Zawoo;
 
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.function.Function;
 
 public class PROGRAM2
 {
@@ -106,7 +107,7 @@ public class PROGRAM2
 			grossIncome[i] = getGrossIncome(hourlyEmployee[i], hourlyWorked[i], hourlyRate[i], salaryRate[i]);
 			
 			// collect and validate net income
-			netIncome[i] = getNetIncome(hourlyEmployee[i], hourlyWorked[i], hourlyRate[i], salaryRate[i]);
+			netIncome[i] = getNetIncome(localResidents[i], grossIncome[i]);
 		}
 	}
 	
@@ -281,21 +282,57 @@ public class PROGRAM2
     	return salary;
 	}
 	
+	// calculate gross income
 	public static float getGrossIncome(Boolean hourlyEmployee, float hoursWorked, float hoursRate, float salaryRate)
 	{
-		// calculate gross for hourly worker
+		// calculate for hourly/salary
 		if (hourlyEmployee)
-			return hoursWorked * hoursRate;
+			if (hoursWorked > 40)
+				return (hoursWorked - 40) * (hoursRate * 1.5f);
+			else
+				return hoursWorked * hoursRate;
 		else
 			return salaryRate;
 	}
 	
-	public static float getNetIncome(Boolean hourlyEmployee, float hoursWorked, float hoursRate, float salaryRate)
+	// calculate net income for employee
+	public static float getNetIncome(Boolean localResident, float gross)
 	{
-		// calculate gross for hourly worker
-		if (hourlyEmployee)
-			return hoursWorked * hoursRate;
-		else
-			return salaryRate;
+		// calculate net income
+		return (gross - calcFedTax(gross) - calcStateTax(gross) - calcLocalTax(localResident, gross));
+	}
+	
+	// calculate federal tax
+	public static float calcFedTax(float gross)
+	{
+		final float taxRate0 = 0.00f;
+		final float taxRate4 = 0.04f;
+		final float taxRate8 = 0.08f;
+		final float taxRate12 = 0.12f;
+		
+		if (gross >= 0.00f && gross <= 599.99f) return gross * taxRate0;
+		else if (gross >= 600.00f && gross <= 799.99f) return gross * taxRate4;
+		else if (gross >= 800.00f && gross <= 1099.99f) return gross * taxRate8;
+		else if (gross >= 1100.00f) return gross * taxRate12;
+		else return 0;
+	}
+	
+	// calculate state tax
+	public static float calcStateTax(float gross)
+	{
+		final float taxRate6 = 0.06f;
+		
+		if (gross >= 600.00) return gross * taxRate6;
+		else return 0;
+	}
+	
+	// calculate local tax
+	public static float calcLocalTax(Boolean localResident, float gross)
+	{
+		final float taxRateLocal = 0.015f;
+		final float taxRateNonLocal = 0.01f;
+		
+		if (localResident) return gross * taxRateLocal;
+		else return gross * taxRateNonLocal;
 	}
 }
